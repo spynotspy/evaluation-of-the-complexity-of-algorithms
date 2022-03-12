@@ -108,7 +108,7 @@ void shellSort(int *a, const size_t size);
 void countSort(int *a, const size_t size);
 
 //цифровая сортировка массива a размера n
-void digitalSort(int *a, const size_t size);
+void radixSort(int *a, const size_t size);
 
 void generateRandomArray(int *a, size_t size);
 

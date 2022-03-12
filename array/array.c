@@ -350,11 +350,39 @@ void countSort(int *a, const size_t size) {
     free(b);
 }
 
-void digitalSort(int *a, const size_t size) {
-    int b[size];
-    for (int i = 0; i < size; ++i) {
+int digit(int n, int k, int N, int M) {
+    return (n >> (N * k) & (M - 1));
+}
 
+void _radixSort(int *l, int *r, int N) {
+    int k = (32 + N - 1) / N;
+    int M = 1 << N;
+    int sz = r - l;
+    int *b = (int *) malloc(sizeof(int) * sz);
+    int *c = (int *) malloc(sizeof(int) * M);
+    for (int i = 0; i < k; i++) {
+        for (int j = 0; j < M; j++)
+            c[j] = 0;
+
+        for (int *j = l; j < r; j++)
+            c[digit(*j, i, N, M)]++;
+
+        for (int j = 1; j < M; j++)
+            c[j] += c[j - 1];
+
+        for (int *j = r - 1; j >= l; j--)
+            b[--c[digit(*j, i, N, M)]] = *j;
+
+        int cur = 0;
+        for (int *j = l; j < r; j++)
+            *j = b[cur++];
     }
+    free(b);
+    free(c);
+}
+
+void radixSort(int *a, size_t n) {
+    _radixSort(a, a + n, 8);
 }
 
 void generateRandomArray(int *a, size_t size) {

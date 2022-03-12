@@ -79,8 +79,10 @@ void timeExperiment() {
     SortFunc sorts[] = {
             {selectionSort, " selectionSort "},
             {insertionSort, " insertionSort "},
-            {bubbleSort,    " bubbleSort "},
-            {shellSort,     " shellSort "}
+            {bubbleSort, " bubbleSort "},
+            {shellSort, " shellSort "},
+            {combsort, " combSort "},
+            {radixSort, " radixSort "}
             // вы добавите свои сортировки
     };
     const unsigned FUNCS_N = ARRAY_SIZE
