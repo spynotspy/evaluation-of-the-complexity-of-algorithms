@@ -304,12 +304,16 @@ void combsort(int *a, const size_t size) {
     }
 }
 
-void shellSort(int *a, const size_t size) {
-    for (int step = size / 2; step > 0; step /= 2)
-        for (int i = 0; i < size; i++)
-            for (int j = i + step; j < size; ++j)
-                if (a[i] > a[j])
-                    swap(&a[i], &a[j]);
+void shellSort(int *a, size_t size) {
+    for (size_t step = size / 2; step > 0; step /= 2)
+        for (size_t i = step; i < size; i++) {
+            size_t j;
+            for (j = i; j >= step; j -= step) {
+                if (a[i] < a[j - step])
+                    a[j] = a[j - step];
+            }
+            a[j] = a[i];
+        }
 }
 
 
