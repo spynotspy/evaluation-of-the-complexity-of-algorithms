@@ -385,6 +385,137 @@ void radixSort(int *a, size_t n) {
     _radixSort(a, a + n, 8);
 }
 
+unsigned long long getBubbleSortNComps(int *a, const size_t n) {
+    unsigned long long nComps = 0;
+    for (int i = 0; ++nComps && i < n; ++i)
+        for (int j = i; ++nComps && j < n; ++j)
+            if (++nComps && a[i] > a[j])
+                swap(&a[i], &a[j]);
+
+    return nComps;
+}
+
+unsigned long long getSelectionSortNComps(int *a, size_t n) {
+    unsigned long long nComps = 0;
+    for (int i = 0; ++nComps && i < n; i++) {
+        int min = a[i];
+        int minIndex = i;
+        for (int j = i + 1; ++nComps && j < n; j++)
+            if (++nComps && a[j] < min) {
+                min = a[j];
+                minIndex = j;
+            }
+        if (++nComps && i != minIndex)
+            swap(&a[i], &a[minIndex]);
+    }
+
+    return nComps;
+}
+
+
+unsigned long long getInsertionSortNComps(int *a, const size_t size) {
+    unsigned long long nComps = 0;
+    for (size_t i = 1; ++nComps && i < size; i++) {
+        int t = a[i];
+        int j = i;
+        while (++nComps && j > 0 && a[j - 1] > t) {
+            a[j] = a[j - 1];
+            j--;
+        }
+        a[j] = t;
+    }
+    return nComps;
+}
+
+
+unsigned long long getCombsortNComps(int *a, const size_t size) {
+    size_t step = size;
+    int swapped = 1;
+    unsigned long long nComps = 2;
+    while (++nComps && step > 1 || swapped) {
+        if (++nComps && step > 1)
+            step /= 1.24733;
+        swapped = 0;
+        for (size_t i = 0, j = i + step; ++nComps && j < size; ++i, ++j)
+            if (++nComps && a[i] > a[j]) {
+                swap(&a[i], &a[j]);
+                swapped = 1;
+            }
+    }
+    return nComps;
+}
+
+
+unsigned long long getShellSortNComps(int *a, const size_t size) {
+    unsigned long long nComps = 0;
+    for (size_t step = size / 2; ++nComps && step > 0; step /= 2)
+        for (size_t i = step; ++nComps && i < size; i++) {
+            size_t j;
+            for (j = i; ++nComps && j >= step; j -= step) {
+                if (++nComps && a[i] < a[j - step])
+                    a[j] = a[j - step];
+            }
+            a[j] = a[i];
+        }
+    return nComps;
+}
+
+unsigned long long getCountSortNComps(int *a, const size_t size) {
+    int min, max;
+    getMinMax(a, size, &min, &max);
+    int k = max - min + 1;
+
+    // выделение памяти под динамический массив из k элементов,
+    // где каждый из элементов равен 0
+    int *b = (int *) calloc(k, sizeof(int));
+    for (int i = 0; i < size; i++)
+        b[a[i] - min]++;
+
+    int ind = 0;
+    for (int i = 0; i < k; i++) {
+        int x = b[i];
+        for (int j = 0; j < x; j++)
+            a[ind++] = min + i;
+    }
+
+    // освобождение памяти, выделенной под динамический массив
+    free(b);
+}
+
+unsigned long long getRadixSortNComps(int *a, const size_t size) {
+    int N = 8;
+    int *l = a;
+    int *r = a + size;
+    int k = (32 + N - 1) / N;
+    int M = 1 << N;
+    int sz = r - l;
+    int *b = (int *) malloc(sizeof(int) * sz);
+    int *c = (int *) malloc(sizeof(int) * M);
+    unsigned long long nComps = 8;
+    for (int i = 0; ++nComps && i < k; i++) {
+        for (int j = 0; ++nComps && j < M; j++)
+            c[j] = 0;
+
+        for (int *j = l; ++nComps && j < r; j++)
+            c[digit(*j, i, N, M)]++;
+
+        for (int j = 1; ++nComps && j < M; j++)
+            c[j] += c[j - 1];
+
+        for (int *j = r - 1; ++nComps && j >= l; j--)
+            b[--c[digit(*j, i, N, M)]] = *j;
+
+        int cur = 0;
+        ++nComps;
+        for (int *j = l; ++nComps && j < r; j++)
+            *j = b[cur++];
+    }
+    free(b);
+    free(c);
+
+    return nComps + 2;
+}
+
 void generateRandomArray(int *a, size_t size) {
     for (int i = 0; i < size; ++i)
         a[i] = rand() % (1000 - 2 + 1) + 2;

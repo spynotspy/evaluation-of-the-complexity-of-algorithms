@@ -116,4 +116,26 @@ void generateOrderedArray(int *a, size_t size);
 
 void generateOrderedBackwards(int *a, size_t size);
 
+
+unsigned long long getBubbleSortNComps(int *a, const size_t n);
+
+
+unsigned long long getSelectionSortNComps(int *a, const size_t n);
+
+
+unsigned long long getInsertionSortNComps(int *a, const size_t size);
+
+
+unsigned long long getCombsortNComps(int *a, const size_t size);
+
+
+unsigned long long getShellSortNComps(int *a, const size_t size);
+
+
+unsigned long long getCountSortNComps(int *a, const size_t size);
+
+
+unsigned long long getRadixSortNComps(int *a, const size_t size);
+
+
 #endif //INC_5B_ARRAY_H
