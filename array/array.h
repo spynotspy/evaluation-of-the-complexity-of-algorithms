@@ -89,11 +89,11 @@ int negativeElementsCount(int *a, int n);
 
 int isOrdered(const int *a, const size_t n);
 
-//сортировка пузырьком массива a размера n
-void bubbleSort(int *a, const size_t n);
+//сортировка пузырьком массива a размера size
+void bubbleSort(int *a, const size_t size);
 
-//сортировка выбором массива a размера n
-void selectionSort(int *a, const size_t n);
+//сортировка выбором массива a размера size
+void selectionSort(int *a, const size_t size);
 
 //сортировка вставками массива a размера n
 void insertionSort(int *a, const size_t size);

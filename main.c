@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
 #include "array/array.h"
+#include <malloc.h>
 
 #define ARRAY_SIZE(a) sizeof (a) /sizeof(a[0])
 
@@ -38,7 +38,6 @@ typedef struct SortFuncNComps {
 
     char name[64];
 
-    long long nComps;
 } SortFuncNComps;
 
 void checkTime(void (*sortFunc )(int *, size_t),
@@ -46,7 +45,7 @@ void checkTime(void (*sortFunc )(int *, size_t),
                size_t size, char *experimentName) {
     static size_t runCounter = 1;
 // генерация последовательности
-    static int innerBuffer[100000];
+    int *innerBuffer = malloc(sizeof(int) * 2000000);
     generateFunc(innerBuffer, size);
     printf("Run #% zu| ", runCounter++);
     printf(" Name : %s\n", experimentName);
@@ -80,6 +79,7 @@ void checkTime(void (*sortFunc )(int *, size_t),
 
         exit(1);
     }
+    free(innerBuffer);
 }
 
 void checkNComps(unsigned long long (*sortFunc )(int *, size_t),
@@ -87,7 +87,7 @@ void checkNComps(unsigned long long (*sortFunc )(int *, size_t),
                  size_t size, char *experimentName) {
     static size_t runCounter = 1;
 // генерация последовательности
-    static int innerBuffer[100000];
+    int *innerBuffer = malloc(sizeof(int) * 2000000);
     generateFunc(innerBuffer, size);
     printf("Run #% zu| ", runCounter++);
     printf(" Name : %s\n", experimentName);
@@ -114,22 +114,20 @@ void checkNComps(unsigned long long (*sortFunc )(int *, size_t),
 
         // вывод массива, который не смог быть отсортирован
         outputArray_(innerBuffer, size);
-
         exit(1);
     }
+    free(innerBuffer);
 }
 
 
 void timeExperiment() {
     // описание функций сортировки
     SortFunc sorts[] = {
-            {selectionSort, " selectionSort "},
-            {insertionSort, " insertionSort "},
-            {bubbleSort,    " bubbleSort "},
-            {shellSort,     " shellSort "},
-            {combsort,      " combSort "},
-            {radixSort,     " radixSort "}
-            // вы добавите свои сортировки
+
+            {shellSort, " shellSort "},
+            {combsort,  " combsort "},
+            {radixSort, " radixsort "}
+
     };
     const unsigned FUNCS_N = ARRAY_SIZE
                              (sorts);
@@ -146,7 +144,7 @@ void timeExperiment() {
                              (generatingFuncs);
 
     // запись статистики в файл
-    for (size_t size = 10000; size <= 100000; size += 10000) {
+    for (size_t size = 200000; size <= 2000000; size += 200000) {
         printf(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
         printf(" Size : %d\n", size);
         for (int i = 0; i < FUNCS_N; i++) {
@@ -167,11 +165,9 @@ void timeExperiment() {
 void NCompsExperiment() {
     // описание функций сортировки
     SortFuncNComps sorts[] = {
-            {getBubbleSortNComps,    " getBubbleSortNComps "},
-            {getSelectionSortNComps, " getSelectionSortNComps "},
-            {getInsertionSortNComps, " getInsertionSortNComps "},
             {getShellSortNComps,     " getShellSortNComps "},
-            {getRadixSortNComps,     " getRadixSortNComps "}
+            {getRadixSortNComps,     " getRadixSortNComps "},
+            {getCombsortNComps,      " getCombsortNComps "}
     };
 
     const unsigned FUNCS_N = ARRAY_SIZE
@@ -189,7 +185,7 @@ void NCompsExperiment() {
                              (generatingFuncs);
 
 // запись статистики в файл
-    for (size_t size = 10000; size <= 100000; size += 10000) {
+    for (size_t size = 200000; size <= 2000000; size += 200000) {
         printf(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
         printf(" Size : %d\n", size);
         for (int i = 0; i < FUNCS_N; i++) {
@@ -210,7 +206,8 @@ void NCompsExperiment() {
 }
 
 int main() {
-    timeExperiment();
+    //timeExperiment();
     NCompsExperiment();
+
     return 0;
 }

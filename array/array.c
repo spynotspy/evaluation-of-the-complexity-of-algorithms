@@ -257,19 +257,20 @@ int isOrdered(const int *a, const size_t n) {
     return 1;
 }
 
-void bubbleSort(int *a, const size_t n) {
-    for (int i = 0; i < n; ++i)
-        for (int j = i; j < n; ++j)
+//обменная сортировка массива a размера size
+void bubbleSort(int *a, const size_t size) {
+    for (int i = 0; i < size; ++i)
+        for (int j = i; j < size; ++j)
             if (a[i] > a[j])
                 swap(&a[i], &a[j]);
 }
 
-//сортировка массива a размера n выбором
-void selectionSort(int *a, const size_t n) {
+//сортировка массива a размера size выбором
+void selectionSort(int *a, const size_t size) {
     int min;
-    for (size_t i = 0; i < n - 1; i++) {
+    for (size_t i = 0; i < size - 1; i++) {
         min = i;
-        for (size_t j = i + 1; j < n; j++) {
+        for (size_t j = i + 1; j < size; j++) {
             if (a[j] < a[min])
                 min = j;
         }
@@ -277,6 +278,7 @@ void selectionSort(int *a, const size_t n) {
     }
 }
 
+//сортировка вставками массива a размера size
 void insertionSort(int *a, const size_t size) {
     for (size_t i = 1; i < size; i++) {
         int t = a[i];
@@ -289,6 +291,7 @@ void insertionSort(int *a, const size_t size) {
     }
 }
 
+//сортировка расческой массива a размера size
 void combsort(int *a, const size_t size) {
     size_t step = size;
     int swapped = 1;
@@ -304,16 +307,13 @@ void combsort(int *a, const size_t size) {
     }
 }
 
+//сортировка Шелла массива a размера size
 void shellSort(int *a, size_t size) {
-    for (size_t step = size / 2; step > 0; step /= 2)
-        for (size_t i = step; i < size; i++) {
-            size_t j;
-            for (j = i; j >= step; j -= step) {
-                if (a[i] < a[j - step])
-                    a[j] = a[j - step];
-            }
-            a[j] = a[i];
-        }
+    for (int step = size / 2; step > 0; step /= 2)
+        for (int i = step; i < size; ++i)
+            for (int j = i - step; j >= 0 && a[j] > a[j + step]; j -= step)
+                swap(&a[j], &a[j + step]);
+
 }
 
 
@@ -354,6 +354,7 @@ int digit(int n, int k, int N, int M) {
     return (n >> (N * k) & (M - 1));
 }
 
+
 void _radixSort(int *l, int *r, int N) {
     int k = (32 + N - 1) / N;
     int M = 1 << N;
@@ -381,16 +382,18 @@ void _radixSort(int *l, int *r, int N) {
     free(c);
 }
 
-void radixSort(int *a, size_t n) {
-    _radixSort(a, a + n, 8);
+//цифровая сортировка массива a размера size
+void radixSort(int *a, size_t size) {
+    _radixSort(a, a + size, 8);
 }
 
 unsigned long long getBubbleSortNComps(int *a, const size_t n) {
     unsigned long long nComps = 0;
     for (int i = 0; ++nComps && i < n; ++i)
         for (int j = i; ++nComps && j < n; ++j)
-            if (++nComps && a[i] > a[j])
+            if (++nComps && a[i] > a[j]) {
                 swap(&a[i], &a[j]);
+            }
 
     return nComps;
 }
@@ -405,10 +408,10 @@ unsigned long long getSelectionSortNComps(int *a, size_t n) {
                 min = a[j];
                 minIndex = j;
             }
-        if (++nComps && i != minIndex)
+        if (++nComps && i != minIndex) {
             swap(&a[i], &a[minIndex]);
+        }
     }
-
     return nComps;
 }
 
@@ -424,6 +427,7 @@ unsigned long long getInsertionSortNComps(int *a, const size_t size) {
         }
         a[j] = t;
     }
+
     return nComps;
 }
 
@@ -433,8 +437,9 @@ unsigned long long getCombsortNComps(int *a, const size_t size) {
     int swapped = 1;
     unsigned long long nComps = 2;
     while (++nComps && step > 1 || swapped) {
-        if (++nComps && step > 1)
+        if (++nComps && step > 1) {
             step /= 1.24733;
+        }
         swapped = 0;
         for (size_t i = 0, j = i + step; ++nComps && j < size; ++i, ++j)
             if (++nComps && a[i] > a[j]) {
@@ -442,21 +447,18 @@ unsigned long long getCombsortNComps(int *a, const size_t size) {
                 swapped = 1;
             }
     }
+
     return nComps;
 }
 
 
 unsigned long long getShellSortNComps(int *a, const size_t size) {
     unsigned long long nComps = 0;
-    for (size_t step = size / 2; ++nComps && step > 0; step /= 2)
-        for (size_t i = step; ++nComps && i < size; i++) {
-            size_t j;
-            for (j = i; ++nComps && j >= step; j -= step) {
-                if (++nComps && a[i] < a[j - step])
-                    a[j] = a[j - step];
-            }
-            a[j] = a[i];
-        }
+    for (int step = size / 2; ++nComps && step > 0; step /= 2)
+        for (int i = step; ++nComps && i < size; ++i)
+            for (int j = i - step; ++nComps && j >= 0 && ++nComps && a[j] > a[j + step]; j -= step)
+                swap(&a[j], &a[j + step]);
+
     return nComps;
 }
 
@@ -491,38 +493,39 @@ unsigned long long getRadixSortNComps(int *a, const size_t size) {
     int sz = r - l;
     int *b = (int *) malloc(sizeof(int) * sz);
     int *c = (int *) malloc(sizeof(int) * M);
-    unsigned long long nComps = 8;
+    unsigned long long nComps = 0;
     for (int i = 0; ++nComps && i < k; i++) {
-        for (int j = 0; ++nComps && j < M; j++)
+        for (int j = 0; ++nComps && j < M; j++) {
             c[j] = 0;
-
-        for (int *j = l; ++nComps && j < r; j++)
+        }
+        for (int *j = l; ++nComps && j < r; j++) {
             c[digit(*j, i, N, M)]++;
-
-        for (int j = 1; ++nComps && j < M; j++)
+        }
+        for (int j = 1; ++nComps && j < M; j++) {
             c[j] += c[j - 1];
+        }
 
-        for (int *j = r - 1; ++nComps && j >= l; j--)
+        for (int *j = r - 1; ++nComps && j >= l; j--) {
             b[--c[digit(*j, i, N, M)]] = *j;
-
+        }
         int cur = 0;
-        ++nComps;
-        for (int *j = l; ++nComps && j < r; j++)
+        for (int *j = l; ++nComps && j < r; j++) {
             *j = b[cur++];
+        }
     }
     free(b);
     free(c);
 
-    return nComps + 2;
+    return nComps;
 }
 
 void generateRandomArray(int *a, size_t size) {
     for (int i = 0; i < size; ++i)
-        a[i] = rand() % (1000 - 2 + 1) + 2;
+        a[i] = rand() % (1000 - 1 + 1) + 1;
 }
 
 void generateOrderedArray(int *a, size_t size) {
-    for (int i = 0; i < size - 1; i++)
+    for (int i = 0; i < size; i++)
         a[i] = i;
 }
 
